@@ -218,11 +218,26 @@ namespace DragAndDrop
 
             LogMessage($"Начата обработка {imageFiles.Count} файлов.");
 
+            // >>> НОВОЕ: Создаем коллекцию для хранения УНИКАЛЬНЫХ папок, которые были изменены.
+            var affectedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var filePath in imageFiles)
             {
-                await ConvertImageAsync(filePath);
+                // >>> ИЗМЕНЕНИЕ: Передаем коллекцию в метод, чтобы он ее наполнял.
+                await ConvertImageAsync(filePath, affectedDirectories);
                 progressBar.Value++;
             }
+
+            // >>> НОВОЕ: После того как все файлы обработаны, отправляем по одному уведомлению для каждой затронутой папки.
+            foreach (var dirPath in affectedDirectories)
+            {
+                ShellManager.NotifyFolderUpdated(dirPath);
+            }
+            if (affectedDirectories.Any())
+            {
+                LogMessage($"Проводник Windows уведомлен об изменениях в {affectedDirectories.Count} папках.");
+            }
+
 
             progressBar.Visible = false;
             dropAreaLabel.Enabled = true; // Разблокируем
@@ -235,7 +250,7 @@ namespace DragAndDrop
         }
 
 
-        private async Task ConvertImageAsync(string sourceFilePath)
+        private async Task ConvertImageAsync(string sourceFilePath, ISet<string> directoriesToRefresh)
         {
             try
             {
@@ -271,7 +286,7 @@ namespace DragAndDrop
 
                 string outputExtension = selectedFormatKey.ToLowerInvariant();
                 string outputFileName = $"{Path.GetFileNameWithoutExtension(sourceFilePath)}.{outputExtension}";
-                string outputDirectory;
+                string? outputDirectory; // Используем nullable для большей безопасности
 
                 if (useCustomFolder && !string.IsNullOrWhiteSpace(customPath) && Directory.Exists(customPath))
                 {
@@ -279,7 +294,7 @@ namespace DragAndDrop
                 }
                 else
                 {
-                    outputDirectory = Path.GetDirectoryName(sourceFilePath) ?? "";
+                    outputDirectory = Path.GetDirectoryName(sourceFilePath);
                 }
 
                 if (string.IsNullOrEmpty(outputDirectory))
@@ -309,11 +324,14 @@ namespace DragAndDrop
                             outputMagickFormat == MagickFormat.Avif)
                         {
                             // Используем сохраненное значение qualityValue
-                            image.Quality = (uint) qualityValue;
+                            image.Quality = (uint)qualityValue;
                         }
                         image.Write(outputFilePath);
                     }
                 });
+
+                // >>> НОВОЕ: Добавляем папку, в которую сохранили файл, в список для обновления.
+                directoriesToRefresh.Add(outputDirectory);
 
                 LogMessage($"Успешно: {Path.GetFileName(sourceFilePath)} -> {Path.GetFileName(outputFilePath)}");
 
@@ -321,7 +339,18 @@ namespace DragAndDrop
                 {
                     try
                     {
+                        // Запоминаем исходную папку ПЕРЕД удалением файла
+                        string? sourceDirectory = Path.GetDirectoryName(sourceFilePath);
+
                         File.Delete(sourceFilePath);
+
+                        // >>> НОВОЕ: Если исходная папка существует, ее тоже добавляем в список.
+                        // Это важно, если исходная и целевая папки различаются.
+                        if (sourceDirectory != null)
+                        {
+                            directoriesToRefresh.Add(sourceDirectory);
+                        }
+
                         LogMessage($"Удален исходный файл: {Path.GetFileName(sourceFilePath)}");
                     }
                     catch (Exception ex)

@@ -1,5 +1,5 @@
-using ImageMagick; // Для Magick.NET
-using System.Diagnostics; // Для Process.Start
+using ImageMagick; // Р”Р»СЏ Magick.NET
+using System.Diagnostics; // Р”Р»СЏ Process.Start
 using System.Media;
 using Microsoft.VisualBasic.FileIO;
 
@@ -15,31 +15,31 @@ namespace DragAndDrop
 
         private void InitializeApplication()
         {
-            // Загрузка форматов в ComboBox
+            // Р—Р°РіСЂСѓР·РєР° С„РѕСЂРјР°С‚РѕРІ РІ ComboBox
             cmbOutputFormat.Items.AddRange(_supportedOutputFormats.Keys.ToArray());
 
-            // Загрузка настроек
+            // Р—Р°РіСЂСѓР·РєР° РЅР°СЃС‚СЂРѕРµРє
             LoadSettings();
 
-            // Настройка событий
+            // РќР°СЃС‚СЂРѕР№РєР° СЃРѕР±С‹С‚РёР№
             chkStayOnTop.CheckedChanged += ChkStayOnTop_CheckedChanged;
             tbQuality.Scroll += TbQuality_Scroll;
             chkCustomOutputFolder.CheckedChanged += ChkCustomOutputFolder_CheckedChanged;
 
-            // Drag and Drop для формы и для Label
+            // Drag and Drop РґР»СЏ С„РѕСЂРјС‹ Рё РґР»СЏ Label
             this.AllowDrop = true;
             this.DragEnter += Form_DragEnter;
             this.DragDrop += Form_DragDrop;
 
-            dropAreaLabel.AllowDrop = true; // Убедитесь, что это свойство установлено в дизайнере или здесь
-            dropAreaLabel.DragEnter += Form_DragEnter; // Используем те же обработчики
+            dropAreaLabel.AllowDrop = true; // РЈР±РµРґРёС‚РµСЃСЊ, С‡С‚Рѕ СЌС‚Рѕ СЃРІРѕР№СЃС‚РІРѕ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РІ РґРёР·Р°Р№РЅРµСЂРµ РёР»Рё Р·РґРµСЃСЊ
+            dropAreaLabel.DragEnter += Form_DragEnter; // РСЃРїРѕР»СЊР·СѓРµРј С‚Рµ Р¶Рµ РѕР±СЂР°Р±РѕС‚С‡РёРєРё
             dropAreaLabel.DragDrop += Form_DragDrop;
 
-            // Обновить состояние UI на основе загруженных настроек
+            // РћР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ UI РЅР° РѕСЃРЅРѕРІРµ Р·Р°РіСЂСѓР¶РµРЅРЅС‹С… РЅР°СЃС‚СЂРѕРµРє
             UpdateUiFromSettings();
         }
 
-        // Список поддерживаемых форматов для вывода
+        // РЎРїРёСЃРѕРє РїРѕРґРґРµСЂР¶РёРІР°РµРјС‹С… С„РѕСЂРјР°С‚РѕРІ РґР»СЏ РІС‹РІРѕРґР°
         private readonly Dictionary<string, MagickFormat> _supportedOutputFormats = new()
         {
             { "JPG", MagickFormat.Jpg },
@@ -51,12 +51,12 @@ namespace DragAndDrop
             { "TIFF", MagickFormat.Tiff }
         };
 
-        // Список расширений, которые считаем изображениями
+        // РЎРїРёСЃРѕРє СЂР°СЃС€РёСЂРµРЅРёР№, РєРѕС‚РѕСЂС‹Рµ СЃС‡РёС‚Р°РµРј РёР·РѕР±СЂР°Р¶РµРЅРёСЏРјРё
         private readonly List<string> _validImageExtensions = new()
         {
             ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif",
-            ".webp", ".avif", ".heic", ".heif", ".svg", ".ico" // Добавьте другие, если нужно
-            // Magick.NET поддерживает многие, но это для быстрой фильтрации
+            ".webp", ".avif", ".heic", ".heif", ".svg", ".ico" // Р”РѕР±Р°РІСЊС‚Рµ РґСЂСѓРіРёРµ, РµСЃР»Рё РЅСѓР¶РЅРѕ
+            // Magick.NET РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РјРЅРѕРіРёРµ, РЅРѕ СЌС‚Рѕ РґР»СЏ Р±С‹СЃС‚СЂРѕР№ С„РёР»СЊС‚СЂР°С†РёРё
         };
 
         private void LogMessage(string message)
@@ -68,7 +68,7 @@ namespace DragAndDrop
             else
             {
                 lbLog.Items.Insert(0, $"{DateTime.Now:HH:mm:ss}: {message}");
-                if (lbLog.Items.Count > 100) // Ограничить количество логов
+                if (lbLog.Items.Count > 100) // РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ Р»РѕРіРѕРІ
                 {
                     lbLog.Items.RemoveAt(lbLog.Items.Count - 1);
                 }
@@ -82,13 +82,13 @@ namespace DragAndDrop
             chkStayOnTop.Checked = Properties.Settings.Default.StayOnTop;
             cmbOutputFormat.SelectedItem = _supportedOutputFormats.ContainsKey(Properties.Settings.Default.OutputFormat)
                                            ? Properties.Settings.Default.OutputFormat
-                                           : "JPG"; // Значение по умолчанию, если сохранено некорректное
+                                           : "JPG"; // Р—РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, РµСЃР»Рё СЃРѕС…СЂР°РЅРµРЅРѕ РЅРµРєРѕСЂСЂРµРєС‚РЅРѕРµ
             tbQuality.Value = Math.Clamp(Properties.Settings.Default.Quality, tbQuality.Minimum, tbQuality.Maximum);
             chkDeleteOriginal.Checked = Properties.Settings.Default.DeleteOriginal;
             chkCustomOutputFolder.Checked = Properties.Settings.Default.UseCustomOutput;
             txtCustomOutputPath.Text = Properties.Settings.Default.CustomOutputPath;
 
-            LogMessage("Настройки загружены.");
+            LogMessage("РќР°СЃС‚СЂРѕР№РєРё Р·Р°РіСЂСѓР¶РµРЅС‹.");
         }
 
         private void SaveSettings()
@@ -100,18 +100,18 @@ namespace DragAndDrop
             Properties.Settings.Default.UseCustomOutput = chkCustomOutputFolder.Checked;
             Properties.Settings.Default.CustomOutputPath = txtCustomOutputPath.Text;
             Properties.Settings.Default.Save();
-            LogMessage("Настройки сохранены.");
+            LogMessage("РќР°СЃС‚СЂРѕР№РєРё СЃРѕС…СЂР°РЅРµРЅС‹.");
         }
 
         private void UpdateUiFromSettings()
         {
-            // Применить "Поверх всех окон"
+            // РџСЂРёРјРµРЅРёС‚СЊ "РџРѕРІРµСЂС… РІСЃРµС… РѕРєРѕРЅ"
             this.TopMost = chkStayOnTop.Checked;
 
-            // Обновить метку качества
+            // РћР±РЅРѕРІРёС‚СЊ РјРµС‚РєСѓ РєР°С‡РµСЃС‚РІР°
             lblQualityValue.Text = tbQuality.Value.ToString();
 
-            // Обновить доступность элементов для выбора папки
+            // РћР±РЅРѕРІРёС‚СЊ РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ СЌР»РµРјРµРЅС‚РѕРІ РґР»СЏ РІС‹Р±РѕСЂР° РїР°РїРєРё
             txtCustomOutputPath.Enabled = chkCustomOutputFolder.Checked;
             btnBrowseOutputFolder.Enabled = chkCustomOutputFolder.Checked;
         }
@@ -138,14 +138,14 @@ namespace DragAndDrop
             btnBrowseOutputFolder.Enabled = chkCustomOutputFolder.Checked;
             if (chkCustomOutputFolder.Checked && string.IsNullOrWhiteSpace(txtCustomOutputPath.Text))
             {
-                BtnBrowseOutputFolder_Click(null, EventArgs.Empty); // Предложить выбрать папку
+                BtnBrowseOutputFolder_Click(null, EventArgs.Empty); // РџСЂРµРґР»РѕР¶РёС‚СЊ РІС‹Р±СЂР°С‚СЊ РїР°РїРєСѓ
             }*/
 
-            // Если пользователь снимает галочку, можно опционально очистить путь
+            // Р•СЃР»Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃРЅРёРјР°РµС‚ РіР°Р»РѕС‡РєСѓ, РјРѕР¶РЅРѕ РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ РѕС‡РёСЃС‚РёС‚СЊ РїСѓС‚СЊ
             // if (!isChecked)
             // {
             //     txtCustomOutputPath.Text = string.Empty;
-            //     // И, возможно, обновить это в настройках, если такая логика нужна
+            //     // Р, РІРѕР·РјРѕР¶РЅРѕ, РѕР±РЅРѕРІРёС‚СЊ СЌС‚Рѕ РІ РЅР°СЃС‚СЂРѕР№РєР°С…, РµСЃР»Рё С‚Р°РєР°СЏ Р»РѕРіРёРєР° РЅСѓР¶РЅР°
             //     // Properties.Settings.Default.CustomOutputPath = string.Empty; 
             // }
 
@@ -155,7 +155,7 @@ namespace DragAndDrop
         {
             using (var dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "Выберите папку для сохранения сконвертированных файлов";
+                dialog.Description = "Р’С‹Р±РµСЂРёС‚Рµ РїР°РїРєСѓ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃРєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹С… С„Р°Р№Р»РѕРІ";
                 if (!string.IsNullOrWhiteSpace(txtCustomOutputPath.Text) && Directory.Exists(txtCustomOutputPath.Text))
                 {
                     dialog.SelectedPath = txtCustomOutputPath.Text;
@@ -164,7 +164,7 @@ namespace DragAndDrop
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     txtCustomOutputPath.Text = dialog.SelectedPath;
-                    LogMessage($"Папка для вывода изменена: {txtCustomOutputPath.Text}");
+                    LogMessage($"РџР°РїРєР° РґР»СЏ РІС‹РІРѕРґР° РёР·РјРµРЅРµРЅР°: {txtCustomOutputPath.Text}");
                 }
             }
         }
@@ -173,11 +173,11 @@ namespace DragAndDrop
         {
             if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                // Проверяем, что хотя бы один из файлов - изображение
+                // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РёР· С„Р°Р№Р»РѕРІ - РёР·РѕР±СЂР°Р¶РµРЅРёРµ
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Any(f => _validImageExtensions.Contains(Path.GetExtension(f).ToLowerInvariant())))
                 {
-                    e.Effect = DragDropEffects.Copy; // Показать, что можно скопировать
+                    e.Effect = DragDropEffects.Copy; // РџРѕРєР°Р·Р°С‚СЊ, С‡С‚Рѕ РјРѕР¶РЅРѕ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ
                 }
                 else
                 {
@@ -199,15 +199,15 @@ namespace DragAndDrop
 
             if (!imageFiles.Any())
             {
-                LogMessage("Перетащены файлы, не являющиеся изображениями, или с неподдерживаемым расширением.");
-                MessageBox.Show("Пожалуйста, перетащите только файлы изображений (например, .jpg, .png, .webp, .avif).", "Неверный тип файла", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LogMessage("РџРµСЂРµС‚Р°С‰РµРЅС‹ С„Р°Р№Р»С‹, РЅРµ СЏРІР»СЏСЋС‰РёРµСЃСЏ РёР·РѕР±СЂР°Р¶РµРЅРёСЏРјРё, РёР»Рё СЃ РЅРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рј СЂР°СЃС€РёСЂРµРЅРёРµРј.");
+                MessageBox.Show("РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРµСЂРµС‚Р°С‰РёС‚Рµ С‚РѕР»СЊРєРѕ С„Р°Р№Р»С‹ РёР·РѕР±СЂР°Р¶РµРЅРёР№ (РЅР°РїСЂРёРјРµСЂ, .jpg, .png, .webp, .avif).", "РќРµРІРµСЂРЅС‹Р№ С‚РёРї С„Р°Р№Р»Р°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (chkCustomOutputFolder.Checked && (string.IsNullOrWhiteSpace(txtCustomOutputPath.Text) || !Directory.Exists(txtCustomOutputPath.Text)))
             {
-                MessageBox.Show("Указана пользовательская папка для вывода, но путь не задан или папка не существует. Пожалуйста, выберите корректную папку.", "Ошибка папки вывода", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LogMessage("Ошибка: Не указана или не существует папка для вывода.");
+                MessageBox.Show("РЈРєР°Р·Р°РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєР°СЏ РїР°РїРєР° РґР»СЏ РІС‹РІРѕРґР°, РЅРѕ РїСѓС‚СЊ РЅРµ Р·Р°РґР°РЅ РёР»Рё РїР°РїРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РІС‹Р±РµСЂРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РїР°РїРєСѓ.", "РћС€РёР±РєР° РїР°РїРєРё РІС‹РІРѕРґР°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogMessage("РћС€РёР±РєР°: РќРµ СѓРєР°Р·Р°РЅР° РёР»Рё РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РїР°РїРєР° РґР»СЏ РІС‹РІРѕРґР°.");
                 return;
             }
 
@@ -215,39 +215,39 @@ namespace DragAndDrop
             progressBar.Minimum = 0;
             progressBar.Maximum = imageFiles.Count;
             progressBar.Value = 0;
-            dropAreaLabel.Enabled = false; // Блокируем перетаскивание во время обработки
+            dropAreaLabel.Enabled = false; // Р‘Р»РѕРєРёСЂСѓРµРј РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ РІРѕ РІСЂРµРјСЏ РѕР±СЂР°Р±РѕС‚РєРё
 
-            LogMessage($"Начата обработка {imageFiles.Count} файлов.");
+            LogMessage($"РќР°С‡Р°С‚Р° РѕР±СЂР°Р±РѕС‚РєР° {imageFiles.Count} С„Р°Р№Р»РѕРІ.");
 
-            // >>> НОВОЕ: Создаем коллекцию для хранения УНИКАЛЬНЫХ папок, которые были изменены.
+            // >>> РќРћР’РћР•: РЎРѕР·РґР°РµРј РєРѕР»Р»РµРєС†РёСЋ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РЈРќРРљРђР›Р¬РќР«РҐ РїР°РїРѕРє, РєРѕС‚РѕСЂС‹Рµ Р±С‹Р»Рё РёР·РјРµРЅРµРЅС‹.
             var affectedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var filePath in imageFiles)
             {
-                // >>> ИЗМЕНЕНИЕ: Передаем коллекцию в метод, чтобы он ее наполнял.
+                // >>> РР—РњР•РќР•РќРР•: РџРµСЂРµРґР°РµРј РєРѕР»Р»РµРєС†РёСЋ РІ РјРµС‚РѕРґ, С‡С‚РѕР±С‹ РѕРЅ РµРµ РЅР°РїРѕР»РЅСЏР».
                 await ConvertImageAsync(filePath, affectedDirectories);
                 progressBar.Value++;
             }
 
-            // >>> НОВОЕ: После того как все файлы обработаны, отправляем по одному уведомлению для каждой затронутой папки.
+            // >>> РќРћР’РћР•: РџРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РІСЃРµ С„Р°Р№Р»С‹ РѕР±СЂР°Р±РѕС‚Р°РЅС‹, РѕС‚РїСЂР°РІР»СЏРµРј РїРѕ РѕРґРЅРѕРјСѓ СѓРІРµРґРѕРјР»РµРЅРёСЋ РґР»СЏ РєР°Р¶РґРѕР№ Р·Р°С‚СЂРѕРЅСѓС‚РѕР№ РїР°РїРєРё.
             foreach (var dirPath in affectedDirectories)
             {
                 ShellManager.NotifyFolderUpdated(dirPath);
             }
             if (affectedDirectories.Any())
             {
-                LogMessage($"Проводник Windows уведомлен об изменениях в {affectedDirectories.Count} папках.");
+                LogMessage($"РџСЂРѕРІРѕРґРЅРёРє Windows СѓРІРµРґРѕРјР»РµРЅ РѕР± РёР·РјРµРЅРµРЅРёСЏС… РІ {affectedDirectories.Count} РїР°РїРєР°С….");
             }
 
 
             progressBar.Visible = false;
-            dropAreaLabel.Enabled = true; // Разблокируем
-            LogMessage("Обработка завершена.");
-            if (imageFiles.Count > 0) // Проверяем, были ли файлы для обработки
+            dropAreaLabel.Enabled = true; // Р Р°Р·Р±Р»РѕРєРёСЂСѓРµРј
+            LogMessage("РћР±СЂР°Р±РѕС‚РєР° Р·Р°РІРµСЂС€РµРЅР°.");
+            if (imageFiles.Count > 0) // РџСЂРѕРІРµСЂСЏРµРј, Р±С‹Р»Рё Р»Рё С„Р°Р№Р»С‹ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
             {
-                SystemSounds.Exclamation.Play(); // Или другой звук на ваш выбор
+                SystemSounds.Exclamation.Play(); // РР»Рё РґСЂСѓРіРѕР№ Р·РІСѓРє РЅР° РІР°С€ РІС‹Р±РѕСЂ
             }
-            //MessageBox.Show($"Обработка {imageFiles.Count} файлов завершена.", "Готово", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show($"РћР±СЂР°Р±РѕС‚РєР° {imageFiles.Count} С„Р°Р№Р»РѕРІ Р·Р°РІРµСЂС€РµРЅР°.", "Р“РѕС‚РѕРІРѕ", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
 
@@ -255,18 +255,18 @@ namespace DragAndDrop
         {
             try
             {
-                LogMessage($"Конвертация: {Path.GetFileName(sourceFilePath)}...");
+                LogMessage($"РљРѕРЅРІРµСЂС‚Р°С†РёСЏ: {Path.GetFileName(sourceFilePath)}...");
 
-                // Получаем значения из UI контролов ДО вызова Task.Run
+                // РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёСЏ РёР· UI РєРѕРЅС‚СЂРѕР»РѕРІ Р”Рћ РІС‹Р·РѕРІР° Task.Run
                 string? selectedFormatKey = null;
-                MagickFormat outputMagickFormat = MagickFormat.Unknown; // Инициализируем
+                MagickFormat outputMagickFormat = MagickFormat.Unknown; // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј
                 bool useCustomFolder = false;
                 string customPath = "";
                 bool deleteOriginal = false;
-                int qualityValue = 0; // Переменная для хранения значения качества
+                int qualityValue = 0; // РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р·РЅР°С‡РµРЅРёСЏ РєР°С‡РµСЃС‚РІР°
 
-                // Используем Invoke для безопасного доступа к контролам из UI потока
-                // Это гарантирует, что мы читаем актуальные значения из правильного потока
+                // РСЃРїРѕР»СЊР·СѓРµРј Invoke РґР»СЏ Р±РµР·РѕРїР°СЃРЅРѕРіРѕ РґРѕСЃС‚СѓРїР° Рє РєРѕРЅС‚СЂРѕР»Р°Рј РёР· UI РїРѕС‚РѕРєР°
+                // Р­С‚Рѕ РіР°СЂР°РЅС‚РёСЂСѓРµС‚, С‡С‚Рѕ РјС‹ С‡РёС‚Р°РµРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РёР· РїСЂР°РІРёР»СЊРЅРѕРіРѕ РїРѕС‚РѕРєР°
                 this.Invoke((MethodInvoker)delegate {
                     selectedFormatKey = cmbOutputFormat.SelectedItem?.ToString();
                     if (selectedFormatKey != null && _supportedOutputFormats.TryGetValue(selectedFormatKey, out var format))
@@ -276,18 +276,18 @@ namespace DragAndDrop
                     useCustomFolder = chkCustomOutputFolder.Checked;
                     customPath = txtCustomOutputPath.Text;
                     deleteOriginal = chkDeleteOriginal.Checked;
-                    qualityValue = tbQuality.Value; // Получаем значение качества здесь
+                    qualityValue = tbQuality.Value; // РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ РєР°С‡РµСЃС‚РІР° Р·РґРµСЃСЊ
                 });
 
                 if (selectedFormatKey == null || outputMagickFormat == MagickFormat.Unknown)
                 {
-                    LogMessage($"Ошибка: Не выбран или не поддерживается выходной формат для {Path.GetFileName(sourceFilePath)}.");
+                    LogMessage($"РћС€РёР±РєР°: РќРµ РІС‹Р±СЂР°РЅ РёР»Рё РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РІС‹С…РѕРґРЅРѕР№ С„РѕСЂРјР°С‚ РґР»СЏ {Path.GetFileName(sourceFilePath)}.");
                     return;
                 }
 
                 string outputExtension = selectedFormatKey.ToLowerInvariant();
                 string outputFileName = $"{Path.GetFileNameWithoutExtension(sourceFilePath)}.{outputExtension}";
-                string? outputDirectory; // Используем nullable для большей безопасности
+                string? outputDirectory; // РСЃРїРѕР»СЊР·СѓРµРј nullable РґР»СЏ Р±РѕР»СЊС€РµР№ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё
 
                 if (useCustomFolder && !string.IsNullOrWhiteSpace(customPath) && Directory.Exists(customPath))
                 {
@@ -300,7 +300,7 @@ namespace DragAndDrop
 
                 if (string.IsNullOrEmpty(outputDirectory))
                 {
-                    LogMessage($"Ошибка: Не удалось определить папку для сохранения {outputFileName}.");
+                    LogMessage($"РћС€РёР±РєР°: РќРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РїР°РїРєСѓ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ {outputFileName}.");
                     return;
                 }
 
@@ -309,12 +309,12 @@ namespace DragAndDrop
                 if (string.Equals(sourceFilePath, outputFilePath, StringComparison.OrdinalIgnoreCase))
                 {
                     string originalName = Path.GetFileNameWithoutExtension(sourceFilePath);
-                    // Используем outputExtension для _converted файла, чтобы он имел правильное расширение
+                    // РСЃРїРѕР»СЊР·СѓРµРј outputExtension РґР»СЏ _converted С„Р°Р№Р»Р°, С‡С‚РѕР±С‹ РѕРЅ РёРјРµР» РїСЂР°РІРёР»СЊРЅРѕРµ СЂР°СЃС€РёСЂРµРЅРёРµ
                     outputFilePath = Path.Combine(outputDirectory, $"{originalName}_converted.{outputExtension}");
-                    LogMessage($"Внимание: Исходный и целевой файлы совпадают. Результат будет сохранен как {Path.GetFileName(outputFilePath)}");
+                    LogMessage($"Р’РЅРёРјР°РЅРёРµ: РСЃС…РѕРґРЅС‹Р№ Рё С†РµР»РµРІРѕР№ С„Р°Р№Р»С‹ СЃРѕРІРїР°РґР°СЋС‚. Р РµР·СѓР»СЊС‚Р°С‚ Р±СѓРґРµС‚ СЃРѕС…СЂР°РЅРµРЅ РєР°Рє {Path.GetFileName(outputFilePath)}");
                 }
 
-                // Используем Task.Run для выноса тяжелой операции в фоновый поток
+                // РСЃРїРѕР»СЊР·СѓРµРј Task.Run РґР»СЏ РІС‹РЅРѕСЃР° С‚СЏР¶РµР»РѕР№ РѕРїРµСЂР°С†РёРё РІ С„РѕРЅРѕРІС‹Р№ РїРѕС‚РѕРє
                 await Task.Run(() =>
                 {
                     using (var image = new MagickImage(sourceFilePath))
@@ -324,54 +324,54 @@ namespace DragAndDrop
                             outputMagickFormat == MagickFormat.WebP ||
                             outputMagickFormat == MagickFormat.Avif)
                         {
-                            // Используем сохраненное значение qualityValue
+                            // РСЃРїРѕР»СЊР·СѓРµРј СЃРѕС…СЂР°РЅРµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ qualityValue
                             image.Quality = (uint)qualityValue;
                         }
                         image.Write(outputFilePath);
                     }
                 });
 
-                // >>> НОВОЕ: Добавляем папку, в которую сохранили файл, в список для обновления.
+                // >>> РќРћР’РћР•: Р”РѕР±Р°РІР»СЏРµРј РїР°РїРєСѓ, РІ РєРѕС‚РѕСЂСѓСЋ СЃРѕС…СЂР°РЅРёР»Рё С„Р°Р№Р», РІ СЃРїРёСЃРѕРє РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ.
                 directoriesToRefresh.Add(outputDirectory);
 
-                LogMessage($"Успешно: {Path.GetFileName(sourceFilePath)} -> {Path.GetFileName(outputFilePath)}");
+                LogMessage($"РЈСЃРїРµС€РЅРѕ: {Path.GetFileName(sourceFilePath)} -> {Path.GetFileName(outputFilePath)}");
 
-                if (deleteOriginal) // Используем значение, полученное из UI потока
+                if (deleteOriginal) // РСЃРїРѕР»СЊР·СѓРµРј Р·РЅР°С‡РµРЅРёРµ, РїРѕР»СѓС‡РµРЅРЅРѕРµ РёР· UI РїРѕС‚РѕРєР°
                 {
                     try
                     {
-                        // Запоминаем исходную папку ПЕРЕД удалением файла
+                        // Р—Р°РїРѕРјРёРЅР°РµРј РёСЃС…РѕРґРЅСѓСЋ РїР°РїРєСѓ РџР•Р Р•Р” СѓРґР°Р»РµРЅРёРµРј С„Р°Р№Р»Р°
                         string? sourceDirectory = Path.GetDirectoryName(sourceFilePath);
 
-                        // >>> ИЗМЕНЕНИЕ: Заменяем File.Delete на FileSystem.DeleteFile <<<
-                        // Эта команда перемещает файл в корзину, а не удаляет навсегда.
+                        // >>> РР—РњР•РќР•РќРР•: Р—Р°РјРµРЅСЏРµРј File.Delete РЅР° FileSystem.DeleteFile <<<
+                        // Р­С‚Р° РєРѕРјР°РЅРґР° РїРµСЂРµРјРµС‰Р°РµС‚ С„Р°Р№Р» РІ РєРѕСЂР·РёРЅСѓ, Р° РЅРµ СѓРґР°Р»СЏРµС‚ РЅР°РІСЃРµРіРґР°.
                         FileSystem.DeleteFile(
                             sourceFilePath,
-                            UIOption.OnlyErrorDialogs, // Не показывать диалоговые окна, кроме ошибок
-                            RecycleOption.SendToRecycleBin // Главный параметр - отправить в корзину
+                            UIOption.OnlyErrorDialogs, // РќРµ РїРѕРєР°Р·С‹РІР°С‚СЊ РґРёР°Р»РѕРіРѕРІС‹Рµ РѕРєРЅР°, РєСЂРѕРјРµ РѕС€РёР±РѕРє
+                            RecycleOption.SendToRecycleBin // Р“Р»Р°РІРЅС‹Р№ РїР°СЂР°РјРµС‚СЂ - РѕС‚РїСЂР°РІРёС‚СЊ РІ РєРѕСЂР·РёРЅСѓ
                         );
 
-                        // Если исходная папка существует, ее тоже добавляем в список.
+                        // Р•СЃР»Рё РёСЃС…РѕРґРЅР°СЏ РїР°РїРєР° СЃСѓС‰РµСЃС‚РІСѓРµС‚, РµРµ С‚РѕР¶Рµ РґРѕР±Р°РІР»СЏРµРј РІ СЃРїРёСЃРѕРє.
                         if (sourceDirectory != null)
                         {
                             directoriesToRefresh.Add(sourceDirectory);
                         }
 
-                        LogMessage($"Перемещен в корзину: {Path.GetFileName(sourceFilePath)}");
+                        LogMessage($"РџРµСЂРµРјРµС‰РµРЅ РІ РєРѕСЂР·РёРЅСѓ: {Path.GetFileName(sourceFilePath)}");
                     }
                     catch (Exception ex)
                     {
-                        LogMessage($"Ошибка перемещения в корзину {Path.GetFileName(sourceFilePath)}: {ex.Message}");
+                        LogMessage($"РћС€РёР±РєР° РїРµСЂРµРјРµС‰РµРЅРёСЏ РІ РєРѕСЂР·РёРЅСѓ {Path.GetFileName(sourceFilePath)}: {ex.Message}");
                     }
                 }
             }
             catch (MagickException magickEx)
             {
-                LogMessage($"Ошибка Magick.NET при обработке {Path.GetFileName(sourceFilePath)}: {magickEx.Message}");
+                LogMessage($"РћС€РёР±РєР° Magick.NET РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ {Path.GetFileName(sourceFilePath)}: {magickEx.Message}");
             }
             catch (Exception ex)
             {
-                LogMessage($"Общая ошибка при обработке {Path.GetFileName(sourceFilePath)}: {ex.Message}");
+                LogMessage($"РћР±С‰Р°СЏ РѕС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ {Path.GetFileName(sourceFilePath)}: {ex.Message}");
             }
         }
 

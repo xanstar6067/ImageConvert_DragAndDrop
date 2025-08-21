@@ -1,6 +1,7 @@
 using ImageMagick; // Для Magick.NET
 using System.Diagnostics; // Для Process.Start
 using System.Media;
+using Microsoft.VisualBasic.FileIO;
 
 namespace DragAndDrop
 {
@@ -342,20 +343,25 @@ namespace DragAndDrop
                         // Запоминаем исходную папку ПЕРЕД удалением файла
                         string? sourceDirectory = Path.GetDirectoryName(sourceFilePath);
 
-                        File.Delete(sourceFilePath);
+                        // >>> ИЗМЕНЕНИЕ: Заменяем File.Delete на FileSystem.DeleteFile <<<
+                        // Эта команда перемещает файл в корзину, а не удаляет навсегда.
+                        FileSystem.DeleteFile(
+                            sourceFilePath,
+                            UIOption.OnlyErrorDialogs, // Не показывать диалоговые окна, кроме ошибок
+                            RecycleOption.SendToRecycleBin // Главный параметр - отправить в корзину
+                        );
 
-                        // >>> НОВОЕ: Если исходная папка существует, ее тоже добавляем в список.
-                        // Это важно, если исходная и целевая папки различаются.
+                        // Если исходная папка существует, ее тоже добавляем в список.
                         if (sourceDirectory != null)
                         {
                             directoriesToRefresh.Add(sourceDirectory);
                         }
 
-                        LogMessage($"Удален исходный файл: {Path.GetFileName(sourceFilePath)}");
+                        LogMessage($"Перемещен в корзину: {Path.GetFileName(sourceFilePath)}");
                     }
                     catch (Exception ex)
                     {
-                        LogMessage($"Ошибка удаления {Path.GetFileName(sourceFilePath)}: {ex.Message}");
+                        LogMessage($"Ошибка перемещения в корзину {Path.GetFileName(sourceFilePath)}: {ex.Message}");
                     }
                 }
             }

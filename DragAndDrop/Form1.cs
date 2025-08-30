@@ -15,6 +15,9 @@ namespace DragAndDrop
 
         private void InitializeApplication()
         {
+            this.Activated += Form_Activated;
+            this.Deactivate += Form_Deactivate;
+
             // Загрузка форматов в ComboBox
             cmbOutputFormat.Items.AddRange(_supportedOutputFormats.Keys.ToArray());
 
@@ -119,6 +122,26 @@ namespace DragAndDrop
         #endregion
 
         #region Event Handlers
+        private void Form_Deactivate(object? sender, EventArgs e)
+        {
+            // Когда форма теряет фокус, временно убираем ее "поверх всех окон"
+            // чтобы она не мешала другим приложениям.
+            if (this.TopMost) // Проверяем, чтобы не делать лишних действий
+            {
+                this.TopMost = false;
+            }
+        }
+
+        private void Form_Activated(object? sender, EventArgs e)
+        {
+            // Когда форма снова становится активной, возвращаем свойство "поверх всех окон"
+            // если пользователь этого хотел (т.е. если галочка стоит).
+            if (chkStayOnTop.Checked)
+            {
+                this.TopMost = true;
+            }
+        }
+
         private void ChkStayOnTop_CheckedChanged(object? sender, EventArgs e)
         {
             this.TopMost = chkStayOnTop.Checked;

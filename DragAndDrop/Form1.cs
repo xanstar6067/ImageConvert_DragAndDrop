@@ -62,20 +62,25 @@ namespace DragAndDrop
             // Magick.NET поддерживает многие, но это для быстрой фильтрации
         };
 
+
+        private const int MaxLogLines = 12;
+        private readonly Queue<string> _logLines = new();
+
         private void LogMessage(string message)
         {
-            if (lbLog.InvokeRequired)
+            if (dropAreaLabel.InvokeRequired)
             {
-                lbLog.Invoke(new Action<string>(LogMessage), message);
+                dropAreaLabel.Invoke(new Action<string>(LogMessage), message);
+                return;
             }
-            else
+
+            _logLines.Enqueue($"{DateTime.Now:HH:mm:ss}: {message}");
+            while (_logLines.Count > MaxLogLines)
             {
-                lbLog.Items.Insert(0, $"{DateTime.Now:HH:mm:ss}: {message}");
-                if (lbLog.Items.Count > 100) // Ограничить количество логов
-                {
-                    lbLog.Items.RemoveAt(lbLog.Items.Count - 1);
-                }
+                _logLines.Dequeue();
             }
+
+            dropAreaLabel.Text = string.Join(Environment.NewLine, _logLines);
         }
 
         #region Settings Load/Save
@@ -234,10 +239,6 @@ namespace DragAndDrop
                 return;
             }
 
-            progressBar.Visible = true;
-            progressBar.Minimum = 0;
-            progressBar.Maximum = imageFiles.Count;
-            progressBar.Value = 0;
             dropAreaLabel.Enabled = false; // Блокируем перетаскивание во время обработки
 
             LogMessage($"Начата обработка {imageFiles.Count} файлов.");
@@ -249,7 +250,6 @@ namespace DragAndDrop
             {
                 // >>> ИЗМЕНЕНИЕ: Передаем коллекцию в метод, чтобы он ее наполнял.
                 await ConvertImageAsync(filePath, affectedDirectories);
-                progressBar.Value++;
             }
 
             // >>> НОВОЕ: После того как все файлы обработаны, отправляем по одному уведомлению для каждой затронутой папки.
@@ -257,13 +257,13 @@ namespace DragAndDrop
             {
                 ShellManager.NotifyFolderUpdated(dirPath);
             }
+
             if (affectedDirectories.Any())
             {
+                ShellManager.ForceRefreshExplorer();
                 LogMessage($"Проводник Windows уведомлен об изменениях в {affectedDirectories.Count} папках.");
             }
 
-
-            progressBar.Visible = false;
             dropAreaLabel.Enabled = true; // Разблокируем
             LogMessage("Обработка завершена.");
             if (imageFiles.Count > 0) // Проверяем, были ли файлы для обработки

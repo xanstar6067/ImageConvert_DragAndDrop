@@ -40,8 +40,6 @@
             txtCustomOutputPath = new TextBox();
             btnBrowseOutputFolder = new Button();
             dropAreaLabel = new Label();
-            progressBar = new ProgressBar();
-            lbLog = new ListBox();
             ((System.ComponentModel.ISupportInitialize)tbQuality).BeginInit();
             SuspendLayout();
             // 
@@ -111,7 +109,7 @@
             chkDeleteOriginal.Name = "chkDeleteOriginal";
             chkDeleteOriginal.Size = new Size(201, 25);
             chkDeleteOriginal.TabIndex = 6;
-            chkDeleteOriginal.Text = "Удалить исходный файл";
+            chkDeleteOriginal.Text = "Переместить исходный в корзину";
             chkDeleteOriginal.UseVisualStyleBackColor = true;
             // 
             // label3
@@ -157,39 +155,20 @@
             // 
             // dropAreaLabel
             // 
-            dropAreaLabel.AutoSize = true;
+            dropAreaLabel.AutoSize = false;
             dropAreaLabel.BorderStyle = BorderStyle.FixedSingle;
             dropAreaLabel.Location = new Point(12, 199);
             dropAreaLabel.Name = "dropAreaLabel";
-            dropAreaLabel.Size = new Size(334, 170);
+            dropAreaLabel.Size = new Size(334, 236);
             dropAreaLabel.TabIndex = 11;
-            dropAreaLabel.Text = "Перетащите файлы изображений сюда          \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n";
-            dropAreaLabel.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // progressBar
-            // 
-            progressBar.Location = new Point(12, 372);
-            progressBar.Name = "progressBar";
-            progressBar.Size = new Size(334, 23);
-            progressBar.TabIndex = 12;
-            // 
-            // lbLog
-            // 
-            lbLog.FormattingEnabled = true;
-            lbLog.HorizontalScrollbar = true;
-            lbLog.ItemHeight = 21;
-            lbLog.Location = new Point(12, 401);
-            lbLog.Name = "lbLog";
-            lbLog.Size = new Size(334, 46);
-            lbLog.TabIndex = 13;
+            dropAreaLabel.Text = "Перетащите файлы изображений сюда";
+            dropAreaLabel.TextAlign = ContentAlignment.TopLeft;
             // 
             // Form
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(356, 448);
-            Controls.Add(lbLog);
-            Controls.Add(progressBar);
+            ClientSize = new Size(356, 447);
             Controls.Add(dropAreaLabel);
             Controls.Add(btnBrowseOutputFolder);
             Controls.Add(txtCustomOutputPath);
@@ -227,7 +206,5 @@
         private TextBox txtCustomOutputPath;
         private Button btnBrowseOutputFolder;
         private Label dropAreaLabel;
-        private ProgressBar progressBar;
-        private ListBox lbLog;
     }
 }

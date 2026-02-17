@@ -59,6 +59,7 @@ namespace DragAndDrop
 
         private const int MaxLogLines = 12;
         private readonly Queue<string> _logLines = new();
+        private const string DuplicateFilePrefix = "copy_";
 
         private void LogMessage(string message)
         {
@@ -325,6 +326,8 @@ namespace DragAndDrop
                     LogMessage($"Внимание: Исходный и целевой файлы совпадают. Результат будет сохранен как {Path.GetFileName(outputFilePath)}");
                 }
 
+                outputFilePath = GetUniqueOutputFilePath(outputFilePath);
+
                 // Используем Task.Run для выноса тяжелой операции в фоновый поток
                 await Task.Run(() =>
                 {
@@ -396,6 +399,36 @@ namespace DragAndDrop
         {
             SaveSettings();
             base.OnFormClosing(e);
+        }
+
+        private string GetUniqueOutputFilePath(string outputFilePath)
+        {
+            if (!File.Exists(outputFilePath))
+            {
+                return outputFilePath;
+            }
+
+            string? directory = Path.GetDirectoryName(outputFilePath);
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return outputFilePath;
+            }
+
+            string extension = Path.GetExtension(outputFilePath);
+            string fileName = Path.GetFileNameWithoutExtension(outputFilePath);
+
+            string candidatePath = Path.Combine(directory, $"{DuplicateFilePrefix}{fileName}{extension}");
+            int suffix = 1;
+
+            while (File.Exists(candidatePath))
+            {
+                candidatePath = Path.Combine(directory, $"{DuplicateFilePrefix}{suffix}_{fileName}{extension}");
+                suffix++;
+            }
+
+            LogMessage($"Внимание: Файл {Path.GetFileName(outputFilePath)} уже существует. Результат будет сохранен как {Path.GetFileName(candidatePath)}");
+
+            return candidatePath;
         }
         #endregion
     }

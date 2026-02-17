@@ -107,9 +107,9 @@
             chkDeleteOriginal.Location = new Point(12, 58);
             chkDeleteOriginal.Margin = new Padding(4);
             chkDeleteOriginal.Name = "chkDeleteOriginal";
-            chkDeleteOriginal.Size = new Size(201, 25);
+            chkDeleteOriginal.Size = new Size(197, 25);
             chkDeleteOriginal.TabIndex = 6;
-            chkDeleteOriginal.Text = "Переместить исходный в корзину";
+            chkDeleteOriginal.Text = "Переместить в корзину";
             chkDeleteOriginal.UseVisualStyleBackColor = true;
             // 
             // label3
@@ -155,14 +155,12 @@
             // 
             // dropAreaLabel
             // 
-            dropAreaLabel.AutoSize = false;
             dropAreaLabel.BorderStyle = BorderStyle.FixedSingle;
             dropAreaLabel.Location = new Point(12, 199);
             dropAreaLabel.Name = "dropAreaLabel";
             dropAreaLabel.Size = new Size(334, 236);
             dropAreaLabel.TabIndex = 11;
             dropAreaLabel.Text = "Перетащите файлы изображений сюда";
-            dropAreaLabel.TextAlign = ContentAlignment.TopLeft;
             // 
             // Form
             // 

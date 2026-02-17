@@ -1,5 +1,4 @@
 using ImageMagick; // Для Magick.NET
-using System.Diagnostics; // Для Process.Start
 using System.Media;
 using Microsoft.VisualBasic.FileIO;
 
@@ -23,8 +22,6 @@ namespace DragAndDrop
 
             // Настройка событий
             chkStayOnTop.CheckedChanged += ChkStayOnTop_CheckedChanged;
-            tbQuality.Scroll += TbQuality_Scroll;
-            chkCustomOutputFolder.CheckedChanged += ChkCustomOutputFolder_CheckedChanged;
 
             // Drag and Drop для формы и для Label
             this.AllowDrop = true;
@@ -220,34 +217,44 @@ namespace DragAndDrop
 
             dropAreaLabel.Enabled = false; // Блокируем перетаскивание во время обработки
 
-            LogMessage($"Начата обработка {imageFiles.Count} файлов.");
-
-            // >>> НОВОЕ: Создаем коллекцию для хранения УНИКАЛЬНЫХ папок, которые были изменены.
-            var affectedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var filePath in imageFiles)
+            try
             {
-                // >>> ИЗМЕНЕНИЕ: Передаем коллекцию в метод, чтобы он ее наполнял.
-                await ConvertImageAsync(filePath, affectedDirectories);
+                LogMessage($"Начата обработка {imageFiles.Count} файлов.");
+
+                // >>> НОВОЕ: Создаем коллекцию для хранения УНИКАЛЬНЫХ папок, которые были изменены.
+                var affectedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var filePath in imageFiles)
+                {
+                    // >>> ИЗМЕНЕНИЕ: Передаем коллекцию в метод, чтобы он ее наполнял.
+                    await ConvertImageAsync(filePath, affectedDirectories);
+                }
+
+                // >>> НОВОЕ: После того как все файлы обработаны, отправляем по одному уведомлению для каждой затронутой папки.
+                foreach (var dirPath in affectedDirectories)
+                {
+                    ShellManager.NotifyFolderUpdated(dirPath);
+                }
+
+                if (affectedDirectories.Any())
+                {
+                    ShellManager.ForceRefreshExplorer();
+                    LogMessage($"Проводник Windows уведомлен об изменениях в {affectedDirectories.Count} папках.");
+                }
+
+                LogMessage("Обработка завершена.");
+                if (imageFiles.Count > 0) // Проверяем, были ли файлы для обработки
+                {
+                    SystemSounds.Exclamation.Play(); // Или другой звук на ваш выбор
+                }
             }
-
-            // >>> НОВОЕ: После того как все файлы обработаны, отправляем по одному уведомлению для каждой затронутой папки.
-            foreach (var dirPath in affectedDirectories)
+            catch (Exception ex)
             {
-                ShellManager.NotifyFolderUpdated(dirPath);
+                LogMessage($"Критическая ошибка в процессе обработки: {ex.Message}");
             }
-
-            if (affectedDirectories.Any())
+            finally
             {
-                ShellManager.ForceRefreshExplorer();
-                LogMessage($"Проводник Windows уведомлен об изменениях в {affectedDirectories.Count} папках.");
-            }
-
-            dropAreaLabel.Enabled = true; // Разблокируем
-            LogMessage("Обработка завершена.");
-            if (imageFiles.Count > 0) // Проверяем, были ли файлы для обработки
-            {
-                SystemSounds.Exclamation.Play(); // Или другой звук на ваш выбор
+                dropAreaLabel.Enabled = true; // Разблокируем
             }
             //MessageBox.Show($"Обработка {imageFiles.Count} файлов завершена.", "Готово", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

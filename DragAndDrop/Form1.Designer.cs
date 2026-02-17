@@ -37,6 +37,7 @@
             chkDeleteOriginal = new CheckBox();
             label3 = new Label();
             chkCustomOutputFolder = new CheckBox();
+            chkClearMeta = new CheckBox();
             txtCustomOutputPath = new TextBox();
             btnBrowseOutputFolder = new Button();
             dropAreaLabel = new Label();
@@ -133,22 +134,33 @@
             chkCustomOutputFolder.UseVisualStyleBackColor = true;
             chkCustomOutputFolder.CheckedChanged += ChkCustomOutputFolder_CheckedChanged;
             // 
+            // chkClearMeta
+            // 
+            chkClearMeta.AutoSize = true;
+            chkClearMeta.Location = new Point(12, 107);
+            chkClearMeta.Margin = new Padding(4);
+            chkClearMeta.Name = "chkClearMeta";
+            chkClearMeta.Size = new Size(177, 25);
+            chkClearMeta.TabIndex = 9;
+            chkClearMeta.Text = "Удалять метаданные";
+            chkClearMeta.UseVisualStyleBackColor = true;
+            // 
             // txtCustomOutputPath
             // 
             txtCustomOutputPath.Enabled = false;
-            txtCustomOutputPath.Location = new Point(12, 115);
+            txtCustomOutputPath.Location = new Point(12, 140);
             txtCustomOutputPath.Name = "txtCustomOutputPath";
             txtCustomOutputPath.ReadOnly = true;
             txtCustomOutputPath.Size = new Size(201, 29);
-            txtCustomOutputPath.TabIndex = 9;
+            txtCustomOutputPath.TabIndex = 10;
             // 
             // btnBrowseOutputFolder
             // 
             btnBrowseOutputFolder.Enabled = false;
-            btnBrowseOutputFolder.Location = new Point(12, 150);
+            btnBrowseOutputFolder.Location = new Point(12, 175);
             btnBrowseOutputFolder.Name = "btnBrowseOutputFolder";
             btnBrowseOutputFolder.Size = new Size(201, 37);
-            btnBrowseOutputFolder.TabIndex = 10;
+            btnBrowseOutputFolder.TabIndex = 11;
             btnBrowseOutputFolder.Text = "Обзор...";
             btnBrowseOutputFolder.UseVisualStyleBackColor = true;
             btnBrowseOutputFolder.Click += BtnBrowseOutputFolder_Click;
@@ -156,10 +168,10 @@
             // dropAreaLabel
             // 
             dropAreaLabel.BorderStyle = BorderStyle.FixedSingle;
-            dropAreaLabel.Location = new Point(12, 199);
+            dropAreaLabel.Location = new Point(12, 224);
             dropAreaLabel.Name = "dropAreaLabel";
-            dropAreaLabel.Size = new Size(334, 236);
-            dropAreaLabel.TabIndex = 11;
+            dropAreaLabel.Size = new Size(334, 211);
+            dropAreaLabel.TabIndex = 12;
             dropAreaLabel.Text = "Перетащите файлы изображений сюда";
             // 
             // Form
@@ -168,6 +180,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(356, 447);
             Controls.Add(dropAreaLabel);
+            Controls.Add(chkClearMeta);
             Controls.Add(btnBrowseOutputFolder);
             Controls.Add(txtCustomOutputPath);
             Controls.Add(chkCustomOutputFolder);
@@ -201,6 +214,7 @@
         private CheckBox chkDeleteOriginal;
         private Label label3;
         private CheckBox chkCustomOutputFolder;
+        private CheckBox chkClearMeta;
         private TextBox txtCustomOutputPath;
         private Button btnBrowseOutputFolder;
         private Label dropAreaLabel;

@@ -15,9 +15,6 @@ namespace DragAndDrop
 
         private void InitializeApplication()
         {
-            this.Activated += Form_Activated;
-            this.Deactivate += Form_Deactivate;
-
             // Загрузка форматов в ComboBox
             cmbOutputFormat.Items.AddRange(_supportedOutputFormats.Keys.ToArray());
 
@@ -93,6 +90,7 @@ namespace DragAndDrop
                                            : "JPG"; // Значение по умолчанию, если сохранено некорректное
             tbQuality.Value = Math.Clamp(Properties.Settings.Default.Quality, tbQuality.Minimum, tbQuality.Maximum);
             chkDeleteOriginal.Checked = Properties.Settings.Default.DeleteOriginal;
+            chkClearMeta.Checked = Properties.Settings.Default.ClearMeta;
             chkCustomOutputFolder.Checked = Properties.Settings.Default.UseCustomOutput;
             txtCustomOutputPath.Text = Properties.Settings.Default.CustomOutputPath;
 
@@ -105,6 +103,7 @@ namespace DragAndDrop
             Properties.Settings.Default.OutputFormat = cmbOutputFormat.SelectedItem?.ToString() ?? "JPG";
             Properties.Settings.Default.Quality = tbQuality.Value;
             Properties.Settings.Default.DeleteOriginal = chkDeleteOriginal.Checked;
+            Properties.Settings.Default.ClearMeta = chkClearMeta.Checked;
             Properties.Settings.Default.UseCustomOutput = chkCustomOutputFolder.Checked;
             Properties.Settings.Default.CustomOutputPath = txtCustomOutputPath.Text;
             Properties.Settings.Default.Save();
@@ -127,26 +126,6 @@ namespace DragAndDrop
         #endregion
 
         #region Event Handlers
-        private void Form_Deactivate(object? sender, EventArgs e)
-        {
-            // Когда форма теряет фокус, временно убираем ее "поверх всех окон"
-            // чтобы она не мешала другим приложениям.
-            if (this.TopMost) // Проверяем, чтобы не делать лишних действий
-            {
-                this.TopMost = false;
-            }
-        }
-
-        private void Form_Activated(object? sender, EventArgs e)
-        {
-            // Когда форма снова становится активной, возвращаем свойство "поверх всех окон"
-            // если пользователь этого хотел (т.е. если галочка стоит).
-            if (chkStayOnTop.Checked)
-            {
-                this.TopMost = true;
-            }
-        }
-
         private void ChkStayOnTop_CheckedChanged(object? sender, EventArgs e)
         {
             this.TopMost = chkStayOnTop.Checked;
@@ -286,6 +265,7 @@ namespace DragAndDrop
                 bool useCustomFolder = false;
                 string customPath = "";
                 bool deleteOriginal = false;
+                bool clearMeta = false;
                 int qualityValue = 0; // Переменная для хранения значения качества
 
                 // Используем Invoke для безопасного доступа к контролам из UI потока
@@ -299,6 +279,7 @@ namespace DragAndDrop
                     useCustomFolder = chkCustomOutputFolder.Checked;
                     customPath = txtCustomOutputPath.Text;
                     deleteOriginal = chkDeleteOriginal.Checked;
+                    clearMeta = chkClearMeta.Checked;
                     qualityValue = tbQuality.Value; // Получаем значение качества здесь
                 });
 
@@ -350,6 +331,12 @@ namespace DragAndDrop
                             // Используем сохраненное значение qualityValue
                             image.Quality = (uint)qualityValue;
                         }
+
+                        if (clearMeta)
+                        {
+                            image.Strip();
+                        }
+
                         image.Write(outputFilePath);
                     }
                 });

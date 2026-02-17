@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
             chkStayOnTop = new CheckBox();
             label1 = new Label();
             cmbOutputFormat = new ComboBox();
@@ -140,7 +141,7 @@
             chkClearMeta.Location = new Point(12, 107);
             chkClearMeta.Margin = new Padding(4);
             chkClearMeta.Name = "chkClearMeta";
-            chkClearMeta.Size = new Size(177, 25);
+            chkClearMeta.Size = new Size(178, 25);
             chkClearMeta.TabIndex = 9;
             chkClearMeta.Text = "Удалять метаданные";
             chkClearMeta.UseVisualStyleBackColor = true;
@@ -194,6 +195,7 @@
             Controls.Add(chkStayOnTop);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
             MaximizeBox = false;
             Name = "Form";

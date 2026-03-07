@@ -1,6 +1,8 @@
 using ImageMagick; // Для Magick.NET
 using System.Media;
 using Microsoft.VisualBasic.FileIO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DragAndDrop
 {
@@ -58,8 +60,11 @@ namespace DragAndDrop
 
 
         private const int MaxLogLines = 12;
+        private const int MaxLogMessageLength = 130;
+        private const int MaxPathLengthInLog = 40;
         private readonly Queue<string> _logLines = new();
         private const string DuplicateFilePrefix = "copy_";
+        private static readonly Regex WindowsPathRegex = new(@"[A-Za-z]:\\[^\s\r\n\t]+", RegexOptions.Compiled);
 
         private void LogMessage(string message)
         {
@@ -69,13 +74,139 @@ namespace DragAndDrop
                 return;
             }
 
-            _logLines.Enqueue($"{DateTime.Now:HH:mm:ss}: {message}");
+            string normalizedMessage = NormalizeLogMessage(message);
+            _logLines.Enqueue($"{DateTime.Now:HH:mm:ss} {normalizedMessage}");
+
             while (_logLines.Count > MaxLogLines)
             {
                 _logLines.Dequeue();
             }
 
-            dropAreaLabel.Text = string.Join(Environment.NewLine, _logLines);
+            dropAreaLabel.Text = string.Join(Environment.NewLine + Environment.NewLine, _logLines);
+        }
+
+        private static string NormalizeLogMessage(string message)
+        {
+            string trimmedMessage = message.Trim();
+            string levelPrefix = ResolveLogLevelPrefix(trimmedMessage);
+            string withShortPaths = ShortenLongPaths(trimmedMessage);
+            string wrappedMessage = WrapByWords(withShortPaths, MaxLogMessageLength);
+
+            if (string.IsNullOrEmpty(levelPrefix))
+            {
+                return wrappedMessage;
+            }
+
+            return $"{levelPrefix} {wrappedMessage}";
+        }
+
+        private static string ResolveLogLevelPrefix(string message)
+        {
+            if (message.StartsWith("[INFO]", StringComparison.OrdinalIgnoreCase) ||
+                message.StartsWith("[WARN]", StringComparison.OrdinalIgnoreCase) ||
+                message.StartsWith("[ERR]", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Empty;
+            }
+
+            if (message.StartsWith("Ошибка", StringComparison.OrdinalIgnoreCase) ||
+                message.StartsWith("Критическая ошибка", StringComparison.OrdinalIgnoreCase))
+            {
+                return "[ERR]";
+            }
+
+            if (message.StartsWith("Внимание", StringComparison.OrdinalIgnoreCase))
+            {
+                return "[WARN]";
+            }
+
+            return "[INFO]";
+        }
+
+        private static string ShortenLongPaths(string message)
+        {
+            return WindowsPathRegex.Replace(message, match =>
+            {
+                string fullMatch = match.Value;
+                string trimmedPath = fullMatch.TrimEnd('.', ',', ';', ':', ')', ']');
+                string trailingChars = fullMatch[trimmedPath.Length..];
+
+                if (trimmedPath.Length <= MaxPathLengthInLog)
+                {
+                    return fullMatch;
+                }
+
+                return $"{ApplyMiddleEllipsis(trimmedPath)}{trailingChars}";
+            });
+        }
+
+        private static string ApplyMiddleEllipsis(string path)
+        {
+            if (path.Length <= MaxPathLengthInLog)
+            {
+                return path;
+            }
+
+            string root = Path.GetPathRoot(path)?.TrimEnd('\\') ?? string.Empty;
+            string fileName = Path.GetFileName(path);
+
+            if (!string.IsNullOrEmpty(root) && !string.IsNullOrEmpty(fileName))
+            {
+                return $"{root}\\...\\{fileName}";
+            }
+
+            int tailLength = Math.Max(10, MaxPathLengthInLog - 5);
+            return $"...{path[^Math.Min(path.Length, tailLength)..]}";
+        }
+
+        private static string WrapByWords(string text, int maxLineLength)
+        {
+            var paragraphs = text.Split(Environment.NewLine);
+            var wrappedParagraphs = new List<string>(paragraphs.Length);
+
+            foreach (string paragraph in paragraphs)
+            {
+                if (string.IsNullOrWhiteSpace(paragraph))
+                {
+                    wrappedParagraphs.Add(string.Empty);
+                    continue;
+                }
+
+                var words = paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var currentLine = new StringBuilder();
+                var wrapped = new StringBuilder();
+
+                foreach (string word in words)
+                {
+                    if (currentLine.Length == 0)
+                    {
+                        currentLine.Append(word);
+                        continue;
+                    }
+
+                    if (currentLine.Length + 1 + word.Length > maxLineLength)
+                    {
+                        wrapped.AppendLine(currentLine.ToString());
+                        currentLine.Clear();
+                    }
+
+                    if (currentLine.Length > 0)
+                    {
+                        currentLine.Append(' ');
+                    }
+
+                    currentLine.Append(word);
+                }
+
+                if (currentLine.Length > 0)
+                {
+                    wrapped.Append(currentLine);
+                }
+
+                wrappedParagraphs.Add(wrapped.ToString().TrimEnd());
+            }
+
+            return string.Join(Environment.NewLine, wrappedParagraphs);
         }
 
         #region Settings Load/Save

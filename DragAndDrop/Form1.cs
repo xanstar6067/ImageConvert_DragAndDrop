@@ -3,6 +3,7 @@ using System.Media;
 using Microsoft.VisualBasic.FileIO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace DragAndDrop
 {
@@ -223,6 +224,7 @@ namespace DragAndDrop
             chkCustomOutputFolder.Checked = Properties.Settings.Default.UseCustomOutput;
             txtCustomOutputPath.Text = Properties.Settings.Default.CustomOutputPath;
 
+            RestoreWindowPlacement();
             LogMessage("Настройки загружены.");
         }
 
@@ -235,8 +237,76 @@ namespace DragAndDrop
             Properties.Settings.Default.ClearMeta = chkClearMeta.Checked;
             Properties.Settings.Default.UseCustomOutput = chkCustomOutputFolder.Checked;
             Properties.Settings.Default.CustomOutputPath = txtCustomOutputPath.Text;
+
+            SaveWindowPlacement();
             Properties.Settings.Default.Save();
             LogMessage("Настройки сохранены.");
+        }
+
+        private void RestoreWindowPlacement()
+        {
+            int savedWidth = Properties.Settings.Default.WindowWidth;
+            int savedHeight = Properties.Settings.Default.WindowHeight;
+
+            if (savedWidth <= 0 || savedHeight <= 0)
+            {
+                return;
+            }
+
+            var savedBounds = new Rectangle(
+                Properties.Settings.Default.WindowLeft,
+                Properties.Settings.Default.WindowTop,
+                savedWidth,
+                savedHeight);
+
+            Screen? targetScreen = TryGetScreenByDeviceName(Properties.Settings.Default.LastScreenDeviceName);
+            if (targetScreen == null || !IsRectangleVisibleOnScreen(savedBounds, targetScreen.WorkingArea))
+            {
+                targetScreen = Screen.FromRectangle(savedBounds);
+            }
+
+            Rectangle restoredBounds = savedBounds;
+            if (!IsRectangleVisibleOnScreen(restoredBounds, targetScreen.WorkingArea))
+            {
+                restoredBounds = new Rectangle(
+                    targetScreen.WorkingArea.Left + Math.Max(0, (targetScreen.WorkingArea.Width - savedBounds.Width) / 2),
+                    targetScreen.WorkingArea.Top + Math.Max(0, (targetScreen.WorkingArea.Height - savedBounds.Height) / 2),
+                    Math.Min(savedBounds.Width, targetScreen.WorkingArea.Width),
+                    Math.Min(savedBounds.Height, targetScreen.WorkingArea.Height));
+            }
+
+            StartPosition = FormStartPosition.Manual;
+            DesktopBounds = restoredBounds;
+            LogMessage($"Положение окна восстановлено: {targetScreen.DeviceName}.");
+        }
+
+        private void SaveWindowPlacement()
+        {
+            Rectangle bounds = DesktopBounds;
+            Screen currentScreen = Screen.FromRectangle(bounds);
+
+            Properties.Settings.Default.WindowLeft = bounds.Left;
+            Properties.Settings.Default.WindowTop = bounds.Top;
+            Properties.Settings.Default.WindowWidth = bounds.Width;
+            Properties.Settings.Default.WindowHeight = bounds.Height;
+            Properties.Settings.Default.LastScreenDeviceName = currentScreen.DeviceName;
+        }
+
+        private static Screen? TryGetScreenByDeviceName(string? deviceName)
+        {
+            if (string.IsNullOrWhiteSpace(deviceName))
+            {
+                return null;
+            }
+
+            return Screen.AllScreens.FirstOrDefault(screen =>
+                string.Equals(screen.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static bool IsRectangleVisibleOnScreen(Rectangle bounds, Rectangle workingArea)
+        {
+            Rectangle intersection = Rectangle.Intersect(bounds, workingArea);
+            return intersection.Width >= 100 && intersection.Height >= 100;
         }
 
         private void UpdateUiFromSettings()
